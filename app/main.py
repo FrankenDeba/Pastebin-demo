@@ -6,12 +6,14 @@ from pydantic import BaseModel
 from app.services.reader import reader
 from app.services.writter import writter
 
+from app.services.analytics import start_analytics
+
 from app.models.main import Pastes
 from data_models import PasteText
-from fastapi.responses import JSONResponse
-from fastapi import Response
 
 app = FastAPI()
+
+start_analytics(app=app)
 
 @app.post("/write")
 def paste(pasteText: str) -> PasteText:
@@ -20,22 +22,9 @@ def paste(pasteText: str) -> PasteText:
 
 @app.get("/read_all")
 def read_pastes():
-    content = {"pastes": reader()}
-    headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    return {
+        "pastes": reader()
     }
-    return JSONResponse(content=content, headers=headers)
-
-@app.options("/read_all")
-def read_pastes_options():
-    headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    }
-    return Response(status_code=204, headers=headers)
 
 @app.get("/read")
 def read_paste_one(url: str):
