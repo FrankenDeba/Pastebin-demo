@@ -8,6 +8,8 @@ from app.services.writter import writter
 
 from app.models.main import Pastes
 from data_models import PasteText
+from fastapi.responses import JSONResponse
+from fastapi import Response
 
 app = FastAPI()
 
@@ -18,9 +20,22 @@ def paste(pasteText: str) -> PasteText:
 
 @app.get("/read_all")
 def read_pastes():
-    return {
-        "pastes": reader()
+    content = {"pastes": reader()}
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
     }
+    return JSONResponse(content=content, headers=headers)
+
+@app.options("/read_all")
+def read_pastes_options():
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    }
+    return Response(status_code=204, headers=headers)
 
 @app.get("/read")
 def read_paste_one(url: str):

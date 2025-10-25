@@ -1,0 +1,55 @@
+.url {
+    background-color: steelblue;
+
+    color: #fff;
+    padding: 10px;
+    border-radius: 15px;
+    margin: 10px;
+}
+
+.paste-box {
+    padding: 10px;
+    /* border: 2px solid #ccc; */
+    box-shadow: 0 0 5px crimson;
+
+    width: 175px;
+
+
+    border-radius: 10px;
+
+    background: #7bc79a;
+    background: radial-gradient(circle, rgba(123, 199, 154, 1) 0%, rgba(46, 150, 171, 1) 66%);
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: right;
+    justify-content: center;
+
+    box-sizing: border-box;;
+
+    width: 100%;
+}
+
+.paste-box button {
+    width: 175px;
+}
+
+.paste-box .btn-holder {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.paste-box textarea {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    background-color: whitesmoke;
+    color: slategrey;
+
+    box-sizing: border-box;
+}
