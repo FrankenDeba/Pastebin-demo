@@ -1,0 +1,42 @@
+server:
+  http_listen_address: 0.0.0.0
+  http_listen_port: 3100
+  grpc_listen_port: 9096
+
+common:
+  path_prefix: /loki
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2024-01-01
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+storage_config:
+  boltdb_shipper:
+    active_index_directory: /loki/index
+    cache_location: /loki/boltdb-cache
+  filesystem:
+    directory: /loki/chunks
+
+ruler:
+  storage:
+    type: local
+    local:
+      directory: /loki/rules
+
+table_manager:
+  retention_deletes_enabled: true
+  retention_period: 168h
+
+limits_config:
+  ingestion_rate_mb: 8
+  ingestion_burst_size_mb: 16

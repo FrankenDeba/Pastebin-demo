@@ -6,12 +6,12 @@ import Url from "./Url";
 export default function Home() {
 function passPaste(paste: string) {
     console.log("Received paste:", paste);
-    fetch(`${host}/write/`, {
+    fetch(`${host}/write`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ content: paste }),
+        body: JSON.stringify({ pasteText: paste }),
     })
     .then(response => response.json())
     .then(data => {
@@ -23,6 +23,16 @@ function passPaste(paste: string) {
     }); 
   }
 
+  async function readAllPastes() {
+    const resp = await fetch(`${host}/read_all`);
+
+    const data = await resp.json();
+
+    console.log("All pastes:", data);
+    
+  }
+
+
   return (
     <div>
       <h1>Welcome to Pastebin Demo</h1>
@@ -30,6 +40,8 @@ function passPaste(paste: string) {
       <PasteBox passPaste={passPaste}/>  
 
       <Url />
+
+      <button onClick={readAllPastes}>Read All Pastes</button>
     </div>
   );
 }

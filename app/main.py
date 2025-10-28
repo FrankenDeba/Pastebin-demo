@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from pydantic import BaseModel
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,17 +9,20 @@ from app.services.reader import reader
 from app.services.writter import writter
 
 from app.services.analytics import start_analytics
+from app.services.logger import init_logger
 
 from app.models.main import Pastes
 from data_models import PasteText
 
 origins = [
-        "http://localhost",
+        "http://localhost:*",
         "http://localhost:8080",
         "http://localhost:3000",
         "http://localhost:9090",
         "http://localhost:3030",
-        "http://127.0.0.1",
+        "http://127.0.0.1:*",
+        "https://localhost:5173/*",
+        "http://127.0.0.1:5173"
         # Add other allowed origins as needed
     ]
 
@@ -33,10 +36,16 @@ app.add_middleware(
     allow_headers=["*"],     # Allow all headers in cross-origin requests
 )
 
+# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# logger = logging.getLogger(__name__)
+
 start_analytics(app=app)
+
+init_logger(app=app)
 
 @app.post("/write")
 def paste(pasteText: str) -> PasteText:
+    # logger.info("Root endpoint accessed.")
     return writter(paste=pasteText)
 # Paste(url=writter(pasteText))
 
