@@ -1,9 +1,88 @@
 from fastapi import FastAPI, Request, Response
-
-import logging
 import time
+import logging
+import logging.config
+import logging_loki
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# logging_setup.py
+import logging, logging.config
+
+LOKI_URL = "http://127.0.0.1:3100/loki/api/v1/push"  # change if needed
+
+def configure_loki_logging():
+    cfg = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "default": {"format": "%(asctime)s %(levelname)s %(name)s - %(message)s"},
+        },
+        "handlers": {
+            # Use "()" factory style — more reliable for 3rd-party handlers
+            "loki": {
+                "()": "logging_loki.LokiHandler",   # if this fails, try "logging_loki.handlers.LokiHandler"
+                "level": "INFO",
+                "formatter": "default",
+                "url": LOKI_URL,
+                "tags": {"application": "pastebin-demo", "env": "dev"},
+                "version": "1",
+                # "timeout": 5,
+                # Only set these if you actually need them:
+                # "auth": ("username", "password"),
+                # "insecure": True,    # for skipping TLS verify on some versions
+                # (avoid "verify": False here — some versions don't accept it)
+            },
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+                "level": "INFO",
+            },
+        },
+        "root": {"level": "INFO", "handlers": ["console", "loki"]},
+        "loggers": {
+            "uvicorn": {"level": "INFO", "handlers": ["console", "loki"], "propagate": False},
+            "uvicorn.error": {"level": "INFO", "handlers": ["console", "loki"], "propagate": False},
+            "uvicorn.access": {"level": "INFO", "handlers": ["console", "loki"], "propagate": False},
+            "fastapi": {"level": "INFO", "handlers": ["console", "loki"], "propagate": False},
+        },
+    }
+
+    # Helpful while debugging handler config:
+    logging.raiseExceptions = True
+    logging.config.dictConfig(cfg)
+
+
+# from starlette.middleware.base import BaseHTTPMiddleware
+
+
+# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# handler = LokiHandler(
+#     url="http://127.0.0.1:3100/loki/api/v1/push",   # or http://loki:3100/... from inside Docker
+#     version="1",
+#     tags={"app": "pastebin-demo", "component": "fastapi"},
+#     # If Loki multi-tenancy is enabled:
+#     # headers={"X-Scope-OrgID": "1"},
+# )
+# logger = logging.getLogger("fastapi")
+# logger.setLevel(logging.INFO)
+# logger.addHandler(handler)
+
+# class AccessLogMiddleware(BaseHTTPMiddleware):
+#     async def dispatch(self, request: Request, call_next):
+#         t0 = time.perf_counter()
+#         response = await call_next(request)
+#         logger.info(
+#             "request",
+#             extra={
+#                 "tags": {"method": request.method, "path": request.url.path},
+#                 "context": {
+#                     "status": response.status_code,
+#                     "duration_ms": round((time.perf_counter()-t0)*1000, 3),
+#                     "client_ip": request.client.host if request.client else None,
+#                 },
+#             },
+#         )
+#         return response
 
 def init_logger(app: FastAPI):
     @app.middleware("http")
