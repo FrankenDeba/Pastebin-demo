@@ -2,10 +2,13 @@ import { useState } from "react";
 import { host } from "../utils/api";
 import PasteBox from "./PasteBox";
 import Url from "./Url";
+import AllPastes from "./AllPastes";
 // import Globe from "./ui/globe";
 
 export default function Home() {
   const [pasteUrl, setpasteUrl] = useState("");
+  const [allPastes, setAllPastes] = useState<any[]>([]);
+
 function passPaste(paste: string) {
     console.log("Received paste:", paste);
     setpasteUrl("");
@@ -35,6 +38,8 @@ function passPaste(paste: string) {
     const data = await resp.json();
 
     console.log("All pastes:", data);
+
+    setAllPastes(data.pastes);
     
   }
 
@@ -48,6 +53,7 @@ function passPaste(paste: string) {
       {pasteUrl && <Url pasteUrl={pasteUrl}/>}
 
       <button onClick={readAllPastes}>Read All Pastes</button>
+      <AllPastes allPastes={allPastes} />
     </div>
   );
 }

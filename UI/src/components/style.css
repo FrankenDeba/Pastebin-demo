@@ -54,3 +54,23 @@
 
     box-sizing: border-box;
 }
+
+.all-pastes {
+    display: flex;
+    width: 500px;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+
+.all-pastes .paste-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    color: slategray;
+    list-style-type: none;
+    justify-content: flex-start;
+    text-align: left;
+}
